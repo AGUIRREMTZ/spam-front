@@ -12,6 +12,7 @@ import GaugeChart from "./components/gauge-chart"
 import WordImportance from "./components/word-importance"
 import ConfusionMatrix from "./components/confusion-matrix"
 import PerformanceMetrics from "./components/performance-metrics"
+import ProbabilityBarChart from "./components/probability-bar-chart"
 
 export default function SpamDetector() {
   const [emailContent, setEmailContent] = useState("")
@@ -86,6 +87,7 @@ export default function SpamDetector() {
   }
 
   const spamProbability = result?.spam_probability ?? 0
+  const hamProbability = 1 - spamProbability
   const isSpam = spamProbability > 0.5
 
   return (
@@ -283,7 +285,10 @@ export default function SpamDetector() {
         {/* Analysis Details */}
         {result && (
           <>
-            <WordImportance words={result.important_words || []} />
+            <div className="grid lg:grid-cols-2 gap-6 mb-6">
+              <ProbabilityBarChart spamProbability={spamProbability} hamProbability={hamProbability} />
+              <WordImportance words={result.important_words || []} />
+            </div>
           </>
         )}
       </div>
