@@ -21,26 +21,26 @@ export default function PerformanceMetrics({
 }: PerformanceMetricsProps) {
   const metrics = [
     {
-      name: "Accuracy",
+      name: "Precisión (Accuracy)",
       value: accuracy,
       icon: Target,
-      description: "Overall correctness of the model",
+      description: "Exactitud general del modelo",
       color: "text-blue-600",
       bgColor: "bg-blue-100",
     },
     {
-      name: "Precision",
+      name: "Precisión (Precision)",
       value: precision,
       icon: CheckCircle,
-      description: "Accuracy of spam predictions",
+      description: "Exactitud de las predicciones de spam",
       color: "text-green-600",
       bgColor: "bg-green-100",
     },
     {
-      name: "Recall",
+      name: "Exhaustividad (Recall)",
       value: recall,
       icon: AlertCircle,
-      description: "Percentage of spam detected",
+      description: "Porcentaje de spam detectado",
       color: "text-orange-600",
       bgColor: "bg-orange-100",
     },
@@ -48,7 +48,7 @@ export default function PerformanceMetrics({
       name: "F1-Score",
       value: f1Score,
       icon: TrendingUp,
-      description: "Balance between precision and recall",
+      description: "Balance entre precisión y exhaustividad",
       color: "text-purple-600",
       bgColor: "bg-purple-100",
     },
@@ -56,10 +56,10 @@ export default function PerformanceMetrics({
 
   if (specificity !== undefined) {
     metrics.push({
-      name: "Specificity",
+      name: "Especificidad",
       value: specificity,
       icon: CheckCircle,
-      description: "Percentage of ham correctly identified",
+      description: "Porcentaje de ham identificado correctamente",
       color: "text-teal-600",
       bgColor: "bg-teal-100",
     })
@@ -84,8 +84,8 @@ export default function PerformanceMetrics({
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle>Performance Metrics</CardTitle>
-        <CardDescription>Model evaluation on test dataset</CardDescription>
+        <CardTitle>Métricas de Rendimiento</CardTitle>
+        <CardDescription>Evaluación del modelo en el conjunto de prueba</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -122,16 +122,17 @@ export default function PerformanceMetrics({
         <div className="mt-6 pt-6 border-t border-slate-200">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="space-y-1">
-              <h4 className="font-semibold text-slate-700">What is F1-Score?</h4>
+              <h4 className="font-semibold text-slate-700">¿Qué es el F1-Score?</h4>
               <p className="text-slate-600">
-                Harmonic mean of precision and recall. A high F1-score indicates the model is both accurate and
-                reliable.
+                Media armónica entre precisión y exhaustividad. Un F1-score alto indica que el modelo es preciso y
+                confiable.
               </p>
             </div>
             <div className="space-y-1">
-              <h4 className="font-semibold text-slate-700">Why it matters</h4>
+              <h4 className="font-semibold text-slate-700">Por qué importa</h4>
               <p className="text-slate-600">
-                Higher scores mean fewer legitimate emails in spam folder and less spam in your inbox.
+                Valores más altos significan menos correos legítimos en la carpeta de spam y menos spam en tu bandeja de
+                entrada.
               </p>
             </div>
           </div>
