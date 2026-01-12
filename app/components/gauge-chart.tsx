@@ -41,7 +41,7 @@ export default function GaugeChart({ probability }: GaugeChartProps) {
       </div>
       <div className="text-center mt-4">
         <div className="text-4xl font-bold text-slate-900">{percentage}%</div>
-        <div className="text-sm text-slate-600 mt-1">Spam Probability</div>
+        <div className="text-sm text-slate-600 mt-1">Probabilidad de Spam</div>
       </div>
     </div>
   )
