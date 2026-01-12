@@ -32,7 +32,7 @@ export default function SpamDetector() {
           setModelMetrics(data)
         }
       } catch (err) {
-        console.log("Could not load model metrics:", err)
+        console.log("No se pudieron cargar las métricas del modelo:", err)
       }
     }
     fetchMetrics()
@@ -47,13 +47,13 @@ export default function SpamDetector() {
       setEmailContent(text)
       setError("")
     } catch (err) {
-      setError("Error reading file. Please try again.")
+      setError("Error al leer el archivo. Por favor, inténtalo de nuevo.")
     }
   }
 
   const analyzeEmail = async () => {
     if (!emailContent.trim()) {
-      setError("Please provide email content to analyze")
+      setError("Por favor, proporciona el contenido de un correo para analizar")
       return
     }
 
@@ -73,13 +73,13 @@ export default function SpamDetector() {
       })
 
       if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`)
+        throw new Error(`Error del servidor: ${response.statusText}`)
       }
 
       const data = await response.json()
       setResult(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to analyze email. Please check your connection.")
+      setError(err instanceof Error ? err.message : "Error al analizar el correo. Verifica tu conexión.")
     } finally {
       setLoading(false)
     }
@@ -94,17 +94,19 @@ export default function SpamDetector() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Mail className="h-12 w-12 text-blue-600" />
+            <span className="p-3 bg-white rounded-2xl shadow-sm">
+              <Mail className="h-12 w-12 text-blue-600" />
+            </span>
             <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Spam Detector
+              Detector de Spam
             </h1>
           </div>
-          <p className="text-slate-600 text-lg">Advanced email analysis using Machine Learning</p>
+          <p className="text-slate-600 text-lg">Análisis avanzado de correos mediante Machine Learning</p>
 
           {modelMetrics && (
             <Button variant="outline" onClick={() => setShowMetrics(!showMetrics)} className="mt-4">
               <BarChart3 className="mr-2 h-4 w-4" />
-              {showMetrics ? "Hide" : "View"} Model Performance
+              {showMetrics ? "Ocultar" : "Ver"} Rendimiento del Modelo
             </Button>
           )}
         </div>
@@ -141,20 +143,20 @@ export default function SpamDetector() {
         {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Input Section */}
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Email Input
+                <Upload className="h-5 w-5 text-blue-500" />
+                Entrada de Correo
               </CardTitle>
-              <CardDescription>Upload an email file or paste the email content</CardDescription>
+              <CardDescription>Sube un archivo o pega el contenido del correo</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 hover:border-blue-500 transition-colors text-center">
-                    <Upload className="h-10 w-10 mx-auto mb-2 text-slate-400" />
-                    <p className="text-sm text-slate-600">Click to upload email file (.txt, .eml)</p>
+                  <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 hover:border-blue-500 hover:bg-blue-50/50 transition-all text-center group">
+                    <Upload className="h-10 w-10 mx-auto mb-2 text-slate-400 group-hover:text-blue-500" />
+                    <p className="text-sm text-slate-600">Haz clic para subir un archivo (.txt, .eml)</p>
                   </div>
                   <input
                     id="file-upload"
@@ -168,29 +170,29 @@ export default function SpamDetector() {
 
               <div className="relative">
                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center">
-                  <div className="flex-1 border-t border-slate-300"></div>
-                  <span className="px-3 text-sm text-slate-500 bg-white">or paste content</span>
-                  <div className="flex-1 border-t border-slate-300"></div>
+                  <div className="flex-1 border-t border-slate-200"></div>
+                  <span className="px-3 text-xs uppercase tracking-wider text-slate-400 bg-white">o pega el texto</span>
+                  <div className="flex-1 border-t border-slate-200"></div>
                 </div>
               </div>
 
               <Textarea
-                placeholder="Paste email content here..."
+                placeholder="Pega el contenido del correo aquí..."
                 value={emailContent}
                 onChange={(e) => setEmailContent(e.target.value)}
-                className="min-h-[200px] font-mono text-sm"
+                className="min-h-[200px] font-mono text-sm bg-slate-50/50 focus:bg-white transition-colors"
               />
 
               <Button onClick={analyzeEmail} disabled={loading || !emailContent.trim()} className="w-full" size="lg">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                    Analizando...
                   </>
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    Analyze Email
+                    Analizar Correo
                   </>
                 )}
               </Button>
@@ -205,7 +207,7 @@ export default function SpamDetector() {
           </Card>
 
           {/* Result Section */}
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {result &&
@@ -214,21 +216,23 @@ export default function SpamDetector() {
                   ) : (
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
                   ))}
-                Detection Result
+                Resultado de la Detección
               </CardTitle>
-              <CardDescription>Spam probability and confidence level</CardDescription>
+              <CardDescription>Probabilidad de spam y nivel de confianza</CardDescription>
             </CardHeader>
             <CardContent>
               {!result ? (
                 <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                  <Mail className="h-16 w-16 text-slate-300 mb-4" />
-                  <p className="text-slate-500">Upload or paste an email to see analysis results</p>
+                  <div className="p-4 bg-slate-50 rounded-full mb-4">
+                    <Mail className="h-12 w-12 text-slate-300" />
+                  </div>
+                  <p className="text-slate-500">Sube o pega un correo para ver los resultados del análisis</p>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <GaugeChart probability={spamProbability} />
 
-                  <Alert className={isSpam ? "border-red-500 bg-red-50" : "border-green-500 bg-green-50"}>
+                  <Alert className={isSpam ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}>
                     <div className="flex items-center gap-3">
                       {isSpam ? (
                         <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -237,41 +241,41 @@ export default function SpamDetector() {
                       )}
                       <div className="flex-1">
                         <h3 className={`font-semibold ${isSpam ? "text-red-900" : "text-green-900"}`}>
-                          {isSpam ? "SPAM Detected" : "Legitimate Email (HAM)"}
+                          {isSpam ? "SPAM Detectado" : "Correo Legítimo (HAM)"}
                         </h3>
                         <p className={`text-sm ${isSpam ? "text-red-700" : "text-green-700"}`}>
                           {isSpam
-                            ? `This email is ${(spamProbability * 100).toFixed(1)}% likely to be spam`
-                            : `This email is ${((1 - spamProbability) * 100).toFixed(1)}% likely to be legitimate`}
+                            ? `Este correo tiene un ${(spamProbability * 100).toFixed(1)}% de probabilidad de ser spam`
+                            : `Este correo tiene un ${((1 - spamProbability) * 100).toFixed(1)}% de probabilidad de ser legítimo`}
                         </p>
                       </div>
                     </div>
                   </Alert>
 
                   {result.model_info && (
-                    <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded border border-slate-200 space-y-2">
-                      <h4 className="font-semibold text-sm text-slate-800 mb-2">Model Information</h4>
+                    <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-2">
+                      <h4 className="font-semibold text-sm text-slate-800 mb-2">Información del Modelo</h4>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="font-medium">Model Type:</span> {result.model_info.model_type}
+                          <span className="font-medium">Tipo de Modelo:</span> {result.model_info.model_type}
                         </div>
                         <div>
-                          <span className="font-medium">Features:</span> {result.model_info.n_features.toLocaleString()}
+                          <span className="font-medium">Características:</span> {result.model_info.n_features.toLocaleString()}
                         </div>
                         <div>
-                          <span className="font-medium">Classes:</span> {result.model_info.classes.join(", ")}
+                          <span className="font-medium">Clases:</span> {result.model_info.classes.join(", ")}
                         </div>
                         <div>
-                          <span className="font-medium">Tokens Processed:</span>{" "}
+                          <span className="font-medium">Tokens Procesados:</span>{" "}
                           {result.parsed_tokens_count.subject + result.parsed_tokens_count.body}
                         </div>
                       </div>
                       <div className="mt-2 pt-2 border-t border-slate-200">
                         <div>
-                          <span className="font-medium">Spam Probability:</span> {(spamProbability * 100).toFixed(2)}%
+                          <span className="font-medium">Probabilidad de Spam:</span> {(spamProbability * 100).toFixed(2)}%
                         </div>
                         <div>
-                          <span className="font-medium">Ham Probability:</span>{" "}
+                          <span className="font-medium">Probabilidad de Ham:</span>{" "}
                           {((1 - spamProbability) * 100).toFixed(2)}%
                         </div>
                       </div>
