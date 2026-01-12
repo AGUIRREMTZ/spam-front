@@ -20,9 +20,9 @@ export default function WordImportance({ words }: WordImportanceProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Hash className="h-5 w-5" />
-          Important Words
+          Palabras Importantes
         </CardTitle>
-        <CardDescription>Words with highest influence on the classification decision</CardDescription>
+        <CardDescription>Palabras con mayor influencia en la decisión de clasificación</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
@@ -56,11 +56,11 @@ export default function WordImportance({ words }: WordImportanceProps) {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(239, 68, 68, 0.6)" }}></div>
-              <span className="text-slate-700">Spam indicators</span>
+              <span className="text-slate-700">Indicadores de spam</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(16, 185, 129, 0.6)" }}></div>
-              <span className="text-slate-700">Ham indicators</span>
+              <span className="text-slate-700">Indicadores de ham</span>
             </div>
           </div>
         </div>
