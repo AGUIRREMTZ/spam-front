@@ -69,8 +69,8 @@ export default function SpamDetector() {
     }
   }
 
-  const isSpam = result?.prediction === "spam" || result?.prediction === "1"
-  const spamProbability = result?.spam_probability || 0
+  const spamProbability = result?.spam_probability ?? 0
+  const isSpam = spamProbability > 0.5
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -188,19 +188,33 @@ export default function SpamDetector() {
                           {isSpam ? "SPAM Detected" : "Legitimate Email (HAM)"}
                         </h3>
                         <p className={`text-sm ${isSpam ? "text-red-700" : "text-green-700"}`}>
-                          Confidence: {(spamProbability * 100).toFixed(1)}%
+                          {isSpam
+                            ? `Spam probability: ${(spamProbability * 100).toFixed(1)}%`
+                            : `Ham probability: ${((1 - spamProbability) * 100).toFixed(1)}%`}
                         </p>
                       </div>
                     </div>
                   </Alert>
 
                   {result.debug && (
-                    <div className="text-xs text-slate-500 font-mono bg-slate-100 p-2 rounded">
-                      <div>Model classes: {result.debug.model_classes.join(", ")}</div>
+                    <div className="text-xs text-slate-500 font-mono bg-slate-100 p-3 rounded space-y-1">
                       <div>
-                        Probabilities: {result.debug.raw_probabilities.map((p: number) => p.toFixed(4)).join(", ")}
+                        <strong>Model classes:</strong> {result.debug.model_classes.join(", ")}
                       </div>
-                      <div>Tokens processed: {result.debug.processed_text_length}</div>
+                      <div>
+                        <strong>Probabilities:</strong>{" "}
+                        {result.debug.raw_probabilities.map((p: number) => (p * 100).toFixed(2) + "%").join(", ")}
+                      </div>
+                      <div>
+                        <strong>Spam index:</strong> {result.debug.spam_index}, <strong>Ham index:</strong>{" "}
+                        {result.debug.ham_index}
+                      </div>
+                      <div>
+                        <strong>Tokens processed:</strong> {result.debug.processed_text_length}
+                      </div>
+                      <div className="truncate">
+                        <strong>Text preview:</strong> {result.debug.processed_text_preview}
+                      </div>
                     </div>
                   )}
                 </div>
