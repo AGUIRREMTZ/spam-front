@@ -2,22 +2,41 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Upload, Mail, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react"
+import { Upload, Mail, AlertTriangle, CheckCircle2, Loader2, BarChart3 } from "lucide-react"
 import GaugeChart from "./components/gauge-chart"
 import WordImportance from "./components/word-importance"
+import ConfusionMatrix from "./components/confusion-matrix"
+import PerformanceMetrics from "./components/performance-metrics"
 
 export default function SpamDetector() {
   const [emailContent, setEmailContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState("")
+  const [modelMetrics, setModelMetrics] = useState<any>(null)
+  const [showMetrics, setShowMetrics] = useState(false)
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://your-render-backend.onrender.com"
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/metrics`)
+        if (response.ok) {
+          const data = await response.json()
+          setModelMetrics(data)
+        }
+      } catch (err) {
+        console.log("Could not load model metrics:", err)
+      }
+    }
+    fetchMetrics()
+  }, [API_URL])
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -43,8 +62,6 @@ export default function SpamDetector() {
     setResult(null)
 
     try {
-      console.log("[v0] Sending request to:", `${API_URL}/api/predict`)
-
       const response = await fetch(`${API_URL}/api/predict`, {
         method: "POST",
         headers: {
@@ -60,7 +77,6 @@ export default function SpamDetector() {
       }
 
       const data = await response.json()
-      console.log("[v0] Received prediction:", data)
       setResult(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to analyze email. Please check your connection.")
@@ -84,7 +100,43 @@ export default function SpamDetector() {
             </h1>
           </div>
           <p className="text-slate-600 text-lg">Advanced email analysis using Machine Learning</p>
+
+          {modelMetrics && (
+            <Button variant="outline" onClick={() => setShowMetrics(!showMetrics)} className="mt-4">
+              <BarChart3 className="mr-2 h-4 w-4" />
+              {showMetrics ? "Hide" : "View"} Model Performance
+            </Button>
+          )}
         </div>
+
+        {showMetrics && modelMetrics && (
+          <div className="mb-8 space-y-6">
+            <div className="grid lg:grid-cols-2 gap-6">
+              {modelMetrics.confusion_matrix && (
+                <ConfusionMatrix
+                  trueNegative={modelMetrics.confusion_matrix.true_negative}
+                  falsePositive={modelMetrics.confusion_matrix.false_positive}
+                  falseNegative={modelMetrics.confusion_matrix.false_negative}
+                  truePositive={modelMetrics.confusion_matrix.true_positive}
+                />
+              )}
+              {modelMetrics.performance_metrics && (
+                <PerformanceMetrics
+                  accuracy={modelMetrics.performance_metrics.accuracy}
+                  precision={modelMetrics.performance_metrics.precision}
+                  recall={modelMetrics.performance_metrics.recall}
+                  f1Score={modelMetrics.performance_metrics.f1_score}
+                  specificity={modelMetrics.performance_metrics.specificity}
+                />
+              )}
+            </div>
+            {modelMetrics.note && (
+              <Alert>
+                <AlertDescription>{modelMetrics.note}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
@@ -189,31 +241,39 @@ export default function SpamDetector() {
                         </h3>
                         <p className={`text-sm ${isSpam ? "text-red-700" : "text-green-700"}`}>
                           {isSpam
-                            ? `Spam probability: ${(spamProbability * 100).toFixed(1)}%`
-                            : `Ham probability: ${((1 - spamProbability) * 100).toFixed(1)}%`}
+                            ? `This email is ${(spamProbability * 100).toFixed(1)}% likely to be spam`
+                            : `This email is ${((1 - spamProbability) * 100).toFixed(1)}% likely to be legitimate`}
                         </p>
                       </div>
                     </div>
                   </Alert>
 
-                  {result.debug && (
-                    <div className="text-xs text-slate-500 font-mono bg-slate-100 p-3 rounded space-y-1">
-                      <div>
-                        <strong>Model classes:</strong> {result.debug.model_classes.join(", ")}
+                  {result.model_info && (
+                    <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded border border-slate-200 space-y-2">
+                      <h4 className="font-semibold text-sm text-slate-800 mb-2">Model Information</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="font-medium">Model Type:</span> {result.model_info.model_type}
+                        </div>
+                        <div>
+                          <span className="font-medium">Features:</span> {result.model_info.n_features.toLocaleString()}
+                        </div>
+                        <div>
+                          <span className="font-medium">Classes:</span> {result.model_info.classes.join(", ")}
+                        </div>
+                        <div>
+                          <span className="font-medium">Tokens Processed:</span>{" "}
+                          {result.parsed_tokens_count.subject + result.parsed_tokens_count.body}
+                        </div>
                       </div>
-                      <div>
-                        <strong>Probabilities:</strong>{" "}
-                        {result.debug.raw_probabilities.map((p: number) => (p * 100).toFixed(2) + "%").join(", ")}
-                      </div>
-                      <div>
-                        <strong>Spam index:</strong> {result.debug.spam_index}, <strong>Ham index:</strong>{" "}
-                        {result.debug.ham_index}
-                      </div>
-                      <div>
-                        <strong>Tokens processed:</strong> {result.debug.processed_text_length}
-                      </div>
-                      <div className="truncate">
-                        <strong>Text preview:</strong> {result.debug.processed_text_preview}
+                      <div className="mt-2 pt-2 border-t border-slate-200">
+                        <div>
+                          <span className="font-medium">Spam Probability:</span> {(spamProbability * 100).toFixed(2)}%
+                        </div>
+                        <div>
+                          <span className="font-medium">Ham Probability:</span>{" "}
+                          {((1 - spamProbability) * 100).toFixed(2)}%
+                        </div>
                       </div>
                     </div>
                   )}
