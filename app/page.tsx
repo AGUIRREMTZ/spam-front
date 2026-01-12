@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Upload, Mail, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react"
 import GaugeChart from "./components/gauge-chart"
-import TechnicalAnalysis from "./components/technical-analysis"
 import WordImportance from "./components/word-importance"
 
 export default function SpamDetector() {
@@ -44,6 +43,8 @@ export default function SpamDetector() {
     setResult(null)
 
     try {
+      console.log("[v0] Sending request to:", `${API_URL}/api/predict`)
+
       const response = await fetch(`${API_URL}/api/predict`, {
         method: "POST",
         headers: {
@@ -59,6 +60,7 @@ export default function SpamDetector() {
       }
 
       const data = await response.json()
+      console.log("[v0] Received prediction:", data)
       setResult(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to analyze email. Please check your connection.")
@@ -191,6 +193,16 @@ export default function SpamDetector() {
                       </div>
                     </div>
                   </Alert>
+
+                  {result.debug && (
+                    <div className="text-xs text-slate-500 font-mono bg-slate-100 p-2 rounded">
+                      <div>Model classes: {result.debug.model_classes.join(", ")}</div>
+                      <div>
+                        Probabilities: {result.debug.raw_probabilities.map((p: number) => p.toFixed(4)).join(", ")}
+                      </div>
+                      <div>Tokens processed: {result.debug.processed_text_length}</div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -200,7 +212,6 @@ export default function SpamDetector() {
         {/* Analysis Details */}
         {result && (
           <>
-            <TechnicalAnalysis />
             <WordImportance words={result.important_words || []} />
           </>
         )}
