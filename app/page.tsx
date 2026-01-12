@@ -53,7 +53,7 @@ export default function SpamDetector() {
 
   const analyzeEmail = async () => {
     if (!emailContent.trim()) {
-      setError("Por favor, proporciona el contenido de un correo para analizar")
+      setError("Por favor, introduce el contenido de un correo para analizar.")
       return
     }
 
@@ -79,7 +79,7 @@ export default function SpamDetector() {
       const data = await response.json()
       setResult(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al analizar el correo. Verifica tu conexión.")
+      setError(err instanceof Error ? err.message : "Error al analizar el correo. Revisa tu conexión.")
     } finally {
       setLoading(false)
     }
@@ -91,17 +91,15 @@ export default function SpamDetector() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
+        {/* Encabezado */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <span className="p-3 bg-white rounded-2xl shadow-sm">
-              <Mail className="h-12 w-12 text-blue-600" />
-            </span>
+            <Mail className="h-12 w-12 text-blue-600" />
             <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Detector de Spam
             </h1>
           </div>
-          <p className="text-slate-600 text-lg">Análisis avanzado de correos mediante Machine Learning</p>
+          <p className="text-slate-600 text-lg">Análisis avanzado de correos mediante Inteligencia Artificial</p>
 
           {modelMetrics && (
             <Button variant="outline" onClick={() => setShowMetrics(!showMetrics)} className="mt-4">
@@ -140,23 +138,23 @@ export default function SpamDetector() {
           </div>
         )}
 
-        {/* Main Content */}
+        {/* Contenido Principal */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Input Section */}
-          <Card className="shadow-lg border-none">
+          {/* Sección de Entrada */}
+          <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5 text-blue-500" />
+                <Upload className="h-5 w-5" />
                 Entrada de Correo
               </CardTitle>
-              <CardDescription>Sube un archivo o pega el contenido del correo</CardDescription>
+              <CardDescription>Sube un archivo de correo o pega el contenido directamente</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 hover:border-blue-500 hover:bg-blue-50/50 transition-all text-center group">
-                    <Upload className="h-10 w-10 mx-auto mb-2 text-slate-400 group-hover:text-blue-500" />
-                    <p className="text-sm text-slate-600">Haz clic para subir un archivo (.txt, .eml)</p>
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 hover:border-blue-500 transition-colors text-center">
+                    <Upload className="h-10 w-10 mx-auto mb-2 text-slate-400" />
+                    <p className="text-sm text-slate-600">Haz clic para subir archivo (.txt, .eml)</p>
                   </div>
                   <input
                     id="file-upload"
@@ -170,9 +168,9 @@ export default function SpamDetector() {
 
               <div className="relative">
                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center">
-                  <div className="flex-1 border-t border-slate-200"></div>
-                  <span className="px-3 text-xs uppercase tracking-wider text-slate-400 bg-white">o pega el texto</span>
-                  <div className="flex-1 border-t border-slate-200"></div>
+                  <div className="flex-1 border-t border-slate-300"></div>
+                  <span className="px-3 text-sm text-slate-500 bg-white">o pega el texto</span>
+                  <div className="flex-1 border-t border-slate-300"></div>
                 </div>
               </div>
 
@@ -180,7 +178,7 @@ export default function SpamDetector() {
                 placeholder="Pega el contenido del correo aquí..."
                 value={emailContent}
                 onChange={(e) => setEmailContent(e.target.value)}
-                className="min-h-[200px] font-mono text-sm bg-slate-50/50 focus:bg-white transition-colors"
+                className="min-h-[200px] font-mono text-sm"
               />
 
               <Button onClick={analyzeEmail} disabled={loading || !emailContent.trim()} className="w-full" size="lg">
@@ -206,8 +204,8 @@ export default function SpamDetector() {
             </CardContent>
           </Card>
 
-          {/* Result Section */}
-          <Card className="shadow-lg border-none">
+          {/* Sección de Resultados */}
+          <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {result &&
@@ -216,23 +214,21 @@ export default function SpamDetector() {
                   ) : (
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
                   ))}
-                Resultado de la Detección
+                Resultado de Detección
               </CardTitle>
-              <CardDescription>Probabilidad de spam y nivel de confianza</CardDescription>
+              <CardDescription>Probabilidad de Spam y nivel de confianza</CardDescription>
             </CardHeader>
             <CardContent>
               {!result ? (
                 <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                  <div className="p-4 bg-slate-50 rounded-full mb-4">
-                    <Mail className="h-12 w-12 text-slate-300" />
-                  </div>
-                  <p className="text-slate-500">Sube o pega un correo para ver los resultados del análisis</p>
+                  <Mail className="h-16 w-16 text-slate-300 mb-4" />
+                  <p className="text-slate-500">Sube o pega un correo para ver el análisis</p>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <GaugeChart probability={spamProbability} />
 
-                  <Alert className={isSpam ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}>
+                  <Alert className={isSpam ? "border-red-500 bg-red-50" : "border-green-500 bg-green-50"}>
                     <div className="flex items-center gap-3">
                       {isSpam ? (
                         <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -253,14 +249,14 @@ export default function SpamDetector() {
                   </Alert>
 
                   {result.model_info && (
-                    <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-2">
+                    <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded border border-slate-200 space-y-2">
                       <h4 className="font-semibold text-sm text-slate-800 mb-2">Información del Modelo</h4>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="font-medium">Tipo de Modelo:</span> {result.model_info.model_type}
+                          <span className="font-medium">Tipo:</span> {result.model_info.model_type}
                         </div>
                         <div>
-                          <span className="font-medium">Características:</span> {result.model_info.n_features.toLocaleString()}
+                          <span className="font-medium">Atributos:</span> {result.model_info.n_features.toLocaleString()}
                         </div>
                         <div>
                           <span className="font-medium">Clases:</span> {result.model_info.classes.join(", ")}
@@ -272,10 +268,10 @@ export default function SpamDetector() {
                       </div>
                       <div className="mt-2 pt-2 border-t border-slate-200">
                         <div>
-                          <span className="font-medium">Probabilidad de Spam:</span> {(spamProbability * 100).toFixed(2)}%
+                          <span className="font-medium">Prob. Spam:</span> {(spamProbability * 100).toFixed(2)}%
                         </div>
                         <div>
-                          <span className="font-medium">Probabilidad de Ham:</span>{" "}
+                          <span className="font-medium">Prob. Legítimo:</span>{" "}
                           {((1 - spamProbability) * 100).toFixed(2)}%
                         </div>
                       </div>
@@ -287,7 +283,7 @@ export default function SpamDetector() {
           </Card>
         </div>
 
-        {/* Analysis Details */}
+        {/* Detalles del Análisis */}
         {result && (
           <>
             <WordImportance words={result.important_words || []} />
